@@ -1,61 +1,70 @@
-import numpy as np
 import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
 
-def generate_synthetic_ed_data(n=5000, seed=42):
-    np.random.seed(seed)
+np.random.seed(42)
 
-    patient_ids = np.arange(1, n + 1)
+NUM_PATIENTS = 5000
 
-    arrival_times = pd.date_range(
-        start="2025-01-01 00:00",
-        periods=n,
-        freq="7min"
+def generate_ed_data(num_patients=NUM_PATIENTS):
+    patient_ids = [f"P{100000+i}" for i in range(num_patients)]
+
+    start_date = datetime(2024, 1, 1)
+    arrival_times = [
+        start_date + timedelta(minutes=random.randint(0, 60 * 24 * 180))
+        for _ in range(num_patients)
+    ]
+
+    triage_levels = np.random.choice(
+        [1, 2, 3, 4, 5],
+        size=num_patients,
+        p=[0.05, 0.15, 0.4, 0.25, 0.15]
     )
 
-    triage_levels = np.random.choice([1, 2, 3, 4, 5], size=n, p=[0.1, 0.2, 0.3, 0.25, 0.15])
+    departments = ["ER", "Trauma", "Cardiology", "Neurology", "Pediatrics"]
+    department_choices = np.random.choice(departments, num_patients)
 
-    departments = np.random.choice(
-        ["Cardiology", "Orthopedics", "General Medicine", "Neurology", "Pediatrics"],
-        size=n
-    )
+    doctors = [f"Dr_{name}" for name in ["Ahmed", "Sara", "John", "Lina", "Omar"]]
+    doctor_assigned = np.random.choice(doctors, num_patients)
 
-    doctors = np.random.choice(
-        ["Dr. Smith", "Dr. Lee", "Dr. Patel", "Dr. Chen", "Dr. Gomez"],
-        size=n
-    )
+    waiting_time = [
+        max(5, int(np.random.normal(120 - t * 15, 20)))
+        for t in triage_levels
+    ]
 
-    waiting_times = np.clip(
-        np.random.normal(loc=30 + triage_levels * 5, scale=10, size=n),
-        0,
-        240
-    )
-
-    treatment_time = np.clip(
-        np.random.normal(loc=40 + triage_levels * 4, scale=15, size=n),
-        5,
-        300
-    )
+    treatment_time = [
+        max(15, int(np.random.normal(60 + t * 20, 30)))
+        for t in triage_levels
+    ]
 
     discharge_status = np.random.choice(
         ["Discharged", "Admitted", "Transferred"],
-        size=n,
-        p=[0.75, 0.20, 0.05]
+        size=num_patients,
+        p=[0.65, 0.25, 0.10]
     )
 
     df = pd.DataFrame({
         "patient_id": patient_ids,
         "arrival_time": arrival_times,
         "triage_level": triage_levels,
-        "department": departments,
-        "doctor_assigned": doctors,
-        "waiting_time_minutes": waiting_times,
+        "department": department_choices,
+        "doctor_assigned": doctor_assigned,
+        "waiting_time_minutes": waiting_time,
         "treatment_time": treatment_time,
         "discharge_status": discharge_status
     })
 
     return df
 
+
+# في آخر الملف
+from pathlib import Path
+
 if __name__ == "__main__":
-    df = generate_synthetic_ed_data()
-    df.to_csv("../data/synthetic_ed_data.csv", index=False)
-    print("Synthetic dataset created.")
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    raw_dir = BASE_DIR / "data" / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+
+    df = generate_ed_data()
+    df.to_csv(raw_dir / "ed_waiting_times.csv", index=False)
