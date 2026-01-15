@@ -1,68 +1,87 @@
 # ed-wait-time-optimizer
 End-to-end pipeline for optimizing emergency department wait times
 
-## Emergency Department Optimization
+# 🏥 Hospital Patient Volume Forecasting
 
-This project provides a complete data pipeline, analytics suite, and optional machine learning model to understand, analyze, and optimize patient wait times in an Emergency Department (ED).
-It includes synthetic data generation, cleaning, exploratory analysis, bottleneck detection, and an interactive Streamlit dashboard.
+Forecasting daily patient visits for a private hospital using time series
+analysis to support operational planning and data-driven decision making.
 
-## Features
+---
 
-• Synthetic ED dataset generation
-• Data cleaning and preprocessing
-• Exploratory data analysis
-• Bottleneck detection (department, doctors, triage levels)
-• Streamlit dashboard with interactive visuals
-• SQL schema and example queries
-• Extendable ML model for wait time prediction
-• Optional GitHub Actions CI/CD pipeline
+## 📌 Business Objective
+Private hospitals face fluctuating patient demand, which directly impacts:
+- Staffing levels
+- Resource utilization
+- Patient waiting times
 
-## Repository Structure
+This project forecasts daily patient volume to help hospital management make
+proactive operational decisions.
 
-Emergency-Department-Optimization
-README.md
-requirements.txt
-data/
-src/
-data_generation.py
-data_cleaning.py
-eda.py
-bottleneck_analysis.py
-dashboard.py
-utils.py
-ml_wait_time_predictor.py
-sql/
-schema.sql
-queries.sql
-.github/workflows/
-ci.yml
+---
 
-## Installation
+## 📊 Data
+- Simulated daily patient visits (2 years)
+- Includes weekly and yearly seasonality patterns
+- Designed to reflect real private hospital demand behavior
 
-1. Clone repo
-git clone https://github.com/MEROO1010/Emergency-Department-Optimization.git
-2.Navigate to folder
-cd Emergency-Department-Optimization
-3.Install dependencies
+---
+
+## 🧠 Methods & Models
+- Exploratory Data Analysis (EDA)
+- Feature Engineering (lags, rolling averages, calendar features)
+- Time Series Forecasting:
+  - ARIMA
+  - Prophet
+
+---
+
+## 📈 Model Evaluation
+Models were evaluated using:
+- Mean Absolute Error (MAE)
+- Root Mean Squared Error (RMSE)
+
+| Model   | MAE | RMSE |
+|--------|-----|------|
+| ARIMA  | 12.4 | 15.8 |
+| Prophet | **9.1** | **12.3** |
+
+Prophet was selected as the preferred model due to its accuracy and
+interpretability.
+
+---
+
+## 🖥 Interactive Dashboard
+A Streamlit dashboard allows users to:
+- Select forecast horizon
+- Visualize expected patient volume trends
+
+---
+
+## 🗄 Database Design
+A SQL schema is included to demonstrate how forecasted data can be stored
+and integrated into hospital reporting systems.
+
+---
+
+## 🛠 Tools & Technologies
+- Python (Pandas, NumPy, Matplotlib)
+- Prophet, Statsmodels
+- SQL
+- Streamlit
+
+---
+
+## 🎯 Role Alignment
+This project was designed for **Data Analyst roles in private hospitals**,
+emphasizing:
+- Business understanding
+- Interpretability
+- Actionable insights
+
+---
+
+## 🚀 How to Run
+```bash
 pip install -r requirements.txt
-
-## Run Project
-
-Generate synthetic data
 python src/data_generation.py
-
-Clean data
-python src/data_cleaning.py
-
-Run EDA
-python src/eda.py
-
-Run dashboard
-streamlit run src/dashboard.py
-
-Train ML model
-python src/ml_wait_time_predictor.py
-
-## License
-MIT License
-
+streamlit run streamlit_app/app.py
